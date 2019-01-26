@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^3.9.0",
     "@material-ui/icons": "^3.0.2",
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "mysql2": "^1.6.4",
     "node-telegram-bot-api": "^0.30.0",
@@ -20,6 +21,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "serve": "npm run build && node server/main.js",
     "sync_db": "node lib/database/sync_db.js"
   },
   "eslintConfig": {
