@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const Sequelize = require("sequelize");
 
+const config = require("../../config");
 const PATH_DB = require("../../config").PATH_DB;
 const DB_USER = "admin";
 const DB_PASSWORD = "admin";
@@ -19,6 +20,7 @@ const DB_PASSWORD = "admin";
 });*/
 const sequelize = new Sequelize("shopping_bot", null, null, {
   dialect: "sqlite",
+  logging: config.LOG_SEQUELIZE,
   storage: path.resolve(__dirname, "../../", "shopping_bot.sqlite3")
 });
 
