@@ -1,15 +1,13 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router } from "react-router-dom";
+import { HashRouter } from "react-router-dom";
 import "./App.css";
-
-import "./components/SignIn";
 
 class App extends Component {
   render() {
     return (
-      <Router>
+      <HashRouter>
         <div>{this.props.children}</div>
-      </Router>
+      </HashRouter>
     );
   }
 }

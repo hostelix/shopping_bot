@@ -3,21 +3,16 @@ import { Route, Switch } from "react-router-dom";
 
 //Components
 import App from "./App";
-import SignIn from "./components/SignIn";
-import Dashboard from "./components/Dashboard";
+import SignIn from "./views/SignIn";
+import DashboardLayout from "./layouts/DashboardLayout";
 
 export default class AppRoutes extends Component {
   render() {
     return (
       <App>
         <Switch>
-          <Route exact path="/" name="signin" component={SignIn} />
-          <Route
-            exact
-            path="/dashboard"
-            name="dashboard"
-            component={Dashboard}
-          />
+          <Route exact path="/" component={SignIn} />
+          <Route path="/dashboard" component={DashboardLayout} />
         </Switch>
       </App>
     );
