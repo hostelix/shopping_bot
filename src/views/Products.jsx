@@ -7,6 +7,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableFooter from "@material-ui/core/TableFooter";
 import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
+import TableHead from "@material-ui/core/TableHead";
 import Paper from "@material-ui/core/Paper";
 import IconButton from "@material-ui/core/IconButton";
 import Button from "@material-ui/core/Button";
@@ -122,7 +123,15 @@ class ProductsTable extends React.Component {
     rowsPerPage: 5
   };
 
-  componentWillMount() {}
+  componentWillMount() {
+    fetch("/api/products")
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          rows: data
+        });
+      });
+  }
 
   handleChangePage = (event, page) => {
     this.setState({ page });
@@ -147,16 +156,26 @@ class ProductsTable extends React.Component {
         <Paper className={classes.root}>
           <div className={classes.tableWrapper}>
             <Table className={classes.table}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>ID</TableCell>
+                  <TableCell align="right">Name</TableCell>
+                  <TableCell align="right">Description</TableCell>
+                  <TableCell align="right">Price</TableCell>
+                  <TableCell align="center">Actions</TableCell>
+                </TableRow>
+              </TableHead>
               <TableBody>
                 {rows
                   .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                   .map(row => (
                     <TableRow key={row.id}>
                       <TableCell component="th" scope="row">
-                        {row.name}
+                        {row.id}
                       </TableCell>
-                      <TableCell align="right">{row.calories}</TableCell>
-                      <TableCell align="right">{row.fat}</TableCell>
+                      <TableCell align="right">{row.name}</TableCell>
+                      <TableCell align="right">{row.description}</TableCell>
+                      <TableCell align="right">{row.price}</TableCell>
                     </TableRow>
                   ))}
                 {emptyRows > 0 && (

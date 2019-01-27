@@ -17,6 +17,8 @@ import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EyeIcon from "@material-ui/icons/PanoramaFishEye";
+import DialogFormUser from "../components/DialogFormUser";
+import { timeout } from "q";
 
 const actionsStyles = theme => ({
   root: {
@@ -122,7 +124,9 @@ class UsersTable extends React.Component {
   state = {
     rows: [],
     page: 0,
-    rowsPerPage: 5
+    rowsPerPage: 5,
+    dialogForm: false,
+    modeForm: "create"
   };
 
   handleChangePage = (event, page) => {
@@ -133,7 +137,36 @@ class UsersTable extends React.Component {
     this.setState({ rowsPerPage: event.target.value });
   };
 
-  componentWillMount() {
+  handleClose = event => {
+    this.setState({
+      dialogForm: false
+    });
+  };
+
+  handleSave = event => {
+    this.handleClose(event);
+    this.loadDataTable();
+  };
+
+  handleDeleteUser = userId => event => {
+    if (window.confirm("Desea eliminar este usuario?")) {
+      fetch(`/api/users/${userId}`, {
+        method: "DELETE"
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.loadDataTable();
+        });
+    }
+  };
+
+  openDialogForm = event => {
+    this.setState({
+      dialogForm: true
+    });
+  };
+
+  loadDataTable = () => {
     fetch("/api/users")
       .then(res => res.json())
       .then(data => {
@@ -141,6 +174,10 @@ class UsersTable extends React.Component {
           rows: data
         });
       });
+  };
+
+  componentWillMount() {
+    this.loadDataTable();
   }
 
   render() {
@@ -152,7 +189,12 @@ class UsersTable extends React.Component {
     return (
       <div>
         <h2>Users</h2>
-        <Button variant="contained" color="primary" className={classes.button}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          onClick={this.openDialogForm}
+        >
           Agregar
         </Button>
         <Paper className={classes.root}>
@@ -181,7 +223,10 @@ class UsersTable extends React.Component {
                       <TableCell align="right">{row.username}</TableCell>
                       <TableCell align="right">{row.chat_id}</TableCell>
                       <TableCell align="center">
-                        <IconButton aria-label="Delete">
+                        <IconButton
+                          aria-label="Delete"
+                          onClick={this.handleDeleteUser(row.id)}
+                        >
                           <DeleteIcon />
                         </IconButton>
                         <IconButton color="secondary" aria-label="Add an alarm">
@@ -216,6 +261,12 @@ class UsersTable extends React.Component {
             </Table>
           </div>
         </Paper>
+        <DialogFormUser
+          open={this.state.dialogForm}
+          handleClose={this.handleClose}
+          handleSave={this.handleSave}
+          mode={this.state.modeForm}
+        />
       </div>
     );
   }

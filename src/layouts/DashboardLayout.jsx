@@ -107,7 +107,7 @@ const listItemsDrawer = [
   {
     title: "Inicio",
     icon: <DashboardIcon />,
-    path: "/"
+    path: "/dashboard"
   },
   {
     title: "Usuarios",
