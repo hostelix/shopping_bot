@@ -1,4 +1,5 @@
 const Sequelize = require("sequelize");
+const utils = require("../../utils");
 
 const User = {
   init: sequelize => {
@@ -21,6 +22,15 @@ const User = {
       username: {
         type: Sequelize.STRING,
         unique: true
+      },
+      password: {
+        type: Sequelize.STRING,
+        set(val) {
+          this.setDataValue(
+            "password",
+            !!val ? utils.encryptPassword(val) : ""
+          );
+        }
       }
     });
   }
