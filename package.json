@@ -6,7 +6,10 @@
     "@material-ui/core": "^3.9.0",
     "@material-ui/icons": "^3.0.2",
     "body-parser": "^1.18.3",
+    "crypto": "^1.0.1",
     "express": "^4.16.4",
+    "jwt-simple": "^0.5.5",
+    "moment": "^2.24.0",
     "mysql2": "^1.6.4",
     "node-telegram-bot-api": "^0.30.0",
     "react": "^16.7.0",
@@ -22,7 +25,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "serve": "npm run build && node server/main.js",
-    "sync_db": "node lib/database/sync_db.js"
+    "sync_db": "node server/database/sync_db.js"
   },
   "eslintConfig": {
     "extends": "react-app"
