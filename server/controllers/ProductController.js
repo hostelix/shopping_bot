@@ -18,7 +18,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  Product.findById(req.params.id)
+  Product.findByPk(req.params.id)
     .then(user => {
       res.status(200).json(user.dataValues());
     })
@@ -48,7 +48,7 @@ router.post("/", (req, res) => {
     });
 });
 router.put("/:id", (req, res) => {
-  Product.findById(req.params.id)
+  Product.findByPk(req.params.id)
     .then(product => {
       return product.update(req.body);
     })
@@ -68,7 +68,7 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  Product.findById(req.params.id)
+  Product.findByPk(req.params.id)
     .then(product => {
       return product.destroy();
     })
