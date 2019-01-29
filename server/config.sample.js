@@ -1,0 +1,10 @@
+module.exports = {
+  BOT_TOKEN: "",
+  PATH_DB: "database_bot.sqlite3",
+  LOG_SEQUELIZE: false,
+  TOKEN_SECRET:
+    "6D02FDDE9391A5C93AE6E4E6D7CC5AD98A66FB1711627D7DF9366EF64CD5DC95",
+  BASE_API_URL: "http://<URL>",
+  SERVER_ADDRESS: "https://<URL>",
+  SERVER_PORT: 4000
+};
