@@ -22,6 +22,7 @@ import ShoppingCardIcon from "@material-ui/icons/ShoppingCart";
 import SpeakerGroupIcon from "@material-ui/icons/SpeakerGroup";
 import Users from "../views/Users";
 import Products from "../views/Products";
+import Sales from "../views/Sales";
 
 const drawerWidth = 240;
 
@@ -217,6 +218,11 @@ class Dashboard extends React.Component {
               path="/dashboard/products"
               name="dashboard-products"
               component={Products}
+            />
+            <Route
+              path="/dashboard/sales"
+              name="dashboard-sales"
+              component={Sales}
             />
           </Switch>
         </main>
