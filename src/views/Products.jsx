@@ -15,6 +15,12 @@ import FirstPageIcon from "@material-ui/icons/FirstPage";
 import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
+import DeleteIcon from "@material-ui/icons/Delete";
+import CreateIcon from "@material-ui/icons/Create";
+import VisibilityIcon from "@material-ui/icons/Visibility";
+import DialogFormProduct from "../components/DialogFormProduct";
+import pickBy from "lodash.pickby";
+import isEmpty from "lodash.isempty";
 
 const actionsStyles = theme => ({
   root: {
@@ -120,18 +126,11 @@ class ProductsTable extends React.Component {
   state = {
     rows: [],
     page: 0,
-    rowsPerPage: 5
+    rowsPerPage: 5,
+    dialogForm: false,
+    dataForm: {},
+    modeForm: "create"
   };
-
-  componentWillMount() {
-    fetch("/api/products")
-      .then(res => res.json())
-      .then(data => {
-        this.setState({
-          rows: data
-        });
-      });
-  }
 
   handleChangePage = (event, page) => {
     this.setState({ page });
@@ -140,6 +139,116 @@ class ProductsTable extends React.Component {
   handleChangeRowsPerPage = event => {
     this.setState({ rowsPerPage: event.target.value });
   };
+
+  handleClose = event => {
+    this.setState({
+      dialogForm: false
+    });
+  };
+
+  handleSave = data => event => {
+    if (this.state.modeForm === "create") {
+      fetch("/api/products", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.setState({
+            dialogForm: false
+          });
+          this.loadDataTable();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else if (this.state.modeForm === "edit") {
+      console.log(data);
+      fetch(`/api/products/${this.state.dataForm.id}`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(this.cleanDataEmpty(data))
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.setState({
+            dialogForm: false
+          });
+          this.loadDataTable();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  };
+
+  handleNewProduct = event => {
+    this.setState({
+      modeForm: "create",
+      dialogForm: true
+    });
+  };
+
+  handleShowProduct = productId => event => {
+    fetch(`/api/products/${productId}`)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          dataForm: data,
+          dialogForm: true,
+          modeForm: "show"
+        });
+      });
+  };
+
+  handleEditProduct = productId => event => {
+    fetch(`/api/products/${productId}`)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          dataForm: data,
+          dialogForm: true,
+          modeForm: "edit"
+        });
+      });
+  };
+
+  handleDeleteProduct = productId => event => {
+    if (window.confirm("Desea eliminar este product?")) {
+      fetch(`/api/products/${productId}`, {
+        method: "DELETE"
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.loadDataTable();
+        });
+    }
+  };
+
+  loadDataTable = () => {
+    fetch("/api/products")
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          rows: data
+        });
+      });
+  };
+
+  cleanDataEmpty = data => {
+    return pickBy(data, v => !isEmpty(v));
+  };
+
+  componentWillMount() {
+    this.loadDataTable();
+  }
 
   render() {
     const { classes } = this.props;
@@ -150,7 +259,12 @@ class ProductsTable extends React.Component {
     return (
       <div>
         <h2>Products</h2>
-        <Button variant="contained" color="primary" className={classes.button}>
+        <Button
+          variant="contained"
+          color="primary"
+          className={classes.button}
+          onClick={this.handleNewProduct}
+        >
           Agregar
         </Button>
         <Paper className={classes.root}>
@@ -176,6 +290,26 @@ class ProductsTable extends React.Component {
                       <TableCell align="right">{row.name}</TableCell>
                       <TableCell align="right">{row.description}</TableCell>
                       <TableCell align="right">{row.price}</TableCell>
+                      <TableCell align="center">
+                        <IconButton
+                          aria-label="Show"
+                          onClick={this.handleShowProduct(row.id)}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                        <IconButton
+                          aria-label="Edit"
+                          onClick={this.handleEditProduct(row.id)}
+                        >
+                          <CreateIcon />
+                        </IconButton>
+                        <IconButton
+                          aria-label="Delete"
+                          onClick={this.handleDeleteProduct(row.id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
                     </TableRow>
                   ))}
                 {emptyRows > 0 && (
@@ -204,6 +338,13 @@ class ProductsTable extends React.Component {
             </Table>
           </div>
         </Paper>
+        <DialogFormProduct
+          open={this.state.dialogForm}
+          mode={this.state.modeForm}
+          data={this.state.dataForm}
+          handleClose={this.handleClose}
+          onSave={this.handleSave}
+        />
       </div>
     );
   }

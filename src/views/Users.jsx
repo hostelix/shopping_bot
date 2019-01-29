@@ -16,9 +16,11 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
 import DeleteIcon from "@material-ui/icons/Delete";
-import EyeIcon from "@material-ui/icons/PanoramaFishEye";
+import CreateIcon from "@material-ui/icons/Create";
+import VisibilityIcon from "@material-ui/icons/Visibility";
 import DialogFormUser from "../components/DialogFormUser";
-import { timeout } from "q";
+import pickBy from "lodash.pickby";
+import isEmpty from "lodash.isempty";
 
 const actionsStyles = theme => ({
   root: {
@@ -126,6 +128,7 @@ class UsersTable extends React.Component {
     page: 0,
     rowsPerPage: 5,
     dialogForm: false,
+    dataForm: {},
     modeForm: "create"
   };
 
@@ -143,9 +146,78 @@ class UsersTable extends React.Component {
     });
   };
 
-  handleSave = event => {
-    this.handleClose(event);
-    this.loadDataTable();
+  handleSave = data => event => {
+    if (this.state.modeForm === "create") {
+      fetch("/api/users", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.setState({
+            dialogForm: false
+          });
+          this.loadDataTable();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else if (this.state.modeForm === "edit") {
+      console.log(data);
+      fetch(`/api/users/${this.state.dataForm.id}`, {
+        method: "PUT",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(this.cleanDataEmpty(data))
+      })
+        .then(res => res.json())
+        .then(data => {
+          this.setState({
+            dialogForm: false
+          });
+          this.loadDataTable();
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  };
+
+  handleNewUser = event => {
+    this.setState({
+      modeForm: "create",
+      dialogForm: true
+    });
+  };
+
+  handleShowUser = userId => event => {
+    fetch(`/api/users/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          dataForm: data,
+          dialogForm: true,
+          modeForm: "show"
+        });
+      });
+  };
+
+  handleEditUser = userId => event => {
+    fetch(`/api/users/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        this.setState({
+          dataForm: data,
+          dialogForm: true,
+          modeForm: "edit"
+        });
+      });
   };
 
   handleDeleteUser = userId => event => {
@@ -160,12 +232,6 @@ class UsersTable extends React.Component {
     }
   };
 
-  openDialogForm = event => {
-    this.setState({
-      dialogForm: true
-    });
-  };
-
   loadDataTable = () => {
     fetch("/api/users")
       .then(res => res.json())
@@ -174,6 +240,10 @@ class UsersTable extends React.Component {
           rows: data
         });
       });
+  };
+
+  cleanDataEmpty = data => {
+    return pickBy(data, v => !isEmpty(v));
   };
 
   componentWillMount() {
@@ -193,7 +263,7 @@ class UsersTable extends React.Component {
           variant="contained"
           color="primary"
           className={classes.button}
-          onClick={this.openDialogForm}
+          onClick={this.handleNewUser}
         >
           Agregar
         </Button>
@@ -224,13 +294,22 @@ class UsersTable extends React.Component {
                       <TableCell align="right">{row.chat_id}</TableCell>
                       <TableCell align="center">
                         <IconButton
+                          aria-label="Show"
+                          onClick={this.handleShowUser(row.id)}
+                        >
+                          <VisibilityIcon />
+                        </IconButton>
+                        <IconButton
+                          aria-label="Edit"
+                          onClick={this.handleEditUser(row.id)}
+                        >
+                          <CreateIcon />
+                        </IconButton>
+                        <IconButton
                           aria-label="Delete"
                           onClick={this.handleDeleteUser(row.id)}
                         >
                           <DeleteIcon />
-                        </IconButton>
-                        <IconButton color="secondary" aria-label="Add an alarm">
-                          <EyeIcon />
                         </IconButton>
                       </TableCell>
                     </TableRow>
@@ -263,9 +342,10 @@ class UsersTable extends React.Component {
         </Paper>
         <DialogFormUser
           open={this.state.dialogForm}
-          handleClose={this.handleClose}
-          handleSave={this.handleSave}
           mode={this.state.modeForm}
+          data={this.state.dataForm}
+          handleClose={this.handleClose}
+          onSave={this.handleSave}
         />
       </div>
     );
