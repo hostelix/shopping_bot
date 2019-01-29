@@ -20,7 +20,7 @@ router.get("/", (req, res) => {
 router.get("/:id", (req, res) => {
   Product.findByPk(req.params.id)
     .then(user => {
-      res.status(200).json(user.dataValues());
+      res.status(200).json(user);
     })
     .catch(err => {
       res.status(500).json({

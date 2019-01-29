@@ -4,7 +4,9 @@ const User = require("../database/models").User;
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  User.findAll()
+  User.findAll({
+    attributes: { exclude: ["password"] }
+  })
     .then(data => {
       res.status(200).json(data);
     })
@@ -18,9 +20,11 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  User.findByPk(req.params.id)
+  User.findByPk(req.params.id, {
+    attributes: { exclude: ["password"] }
+  })
     .then(user => {
-      res.status(200).json(user.dataValues());
+      res.status(200).json(user);
     })
     .catch(err => {
       res.status(500).json({
