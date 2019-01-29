@@ -1,17 +1,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
-
-const telegramBot = require("node-telegram-bot-api");
+const config = require("./config");
 
 const userController = require("./controllers/UserController");
 const productController = require("./controllers/ProductController");
 const authController = require("./controllers/AuthController");
-
-const BOT_TOKEN = require("./config").BOT_TOKEN;
+const saleController = require("./controllers/SaleController");
 
 const app = express();
-//const bot = new telegramBot(BOT_TOKEN, { polling: true });
+const bot = require("../bot");
+
+bot.setWebHook(`${config.SERVER_ADDRESS}/bot${config.BOT_TOKEN}`);
 
 app.use(express.static(path.join(__dirname, "../", "build")));
 
@@ -22,9 +22,18 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
 });
 
+//Bot
+app.post(`/bot${config.BOT_TOKEN}`, (req, res) => {
+  bot.processUpdate(req.body);
+  res.sendStatus(200);
+});
+
 //Api
 app.use("/api/auth", authController);
 app.use("/api/users", userController);
 app.use("/api/products", productController);
+app.use("/api/sales", saleController);
 
-app.listen(4000);
+app.listen(config.SERVER_PORT, () =>
+  console.log(`Shopping App running in ${config.SERVER_PORT}`)
+);
