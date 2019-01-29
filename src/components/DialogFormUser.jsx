@@ -5,36 +5,19 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import { timingSafeEqual } from "crypto";
 
 export default class DialogFormUser extends React.Component {
-  state = {
-    first_name: "",
-    last_name: "",
-    chat_id: "",
-    username: "",
-    password: ""
-  };
+  constructor(props) {
+    super(props);
 
-  handleSave = event => {
-    if (this.props.mode === "create") {
-      fetch("/api/users", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(this.state)
-      })
-        .then(res => res.json())
-        .then(data => {})
-        .catch(err => {
-          console.log(err);
-        });
-    } else {
-    }
-    this.props.handleSave();
-  };
+    this.state = {
+      first_name: "",
+      last_name: "",
+      chat_id: "",
+      username: "",
+      password: ""
+    };
+  }
 
   handleChange = name => event => {
     this.setState({
@@ -42,10 +25,15 @@ export default class DialogFormUser extends React.Component {
     });
   };
 
+  isMode = m => this.props.mode === m;
+
+  getValueField = field => this.props.data[field] || "";
+
   render() {
     return (
       <div>
         <Dialog
+          onEnter={this.handleEnter}
           open={this.props.open}
           onClose={this.props.handleClose}
           aria-labelledby="form-dialog-title"
@@ -57,6 +45,12 @@ export default class DialogFormUser extends React.Component {
               id="first_name"
               label="First Name"
               type="text"
+              disabled={this.isMode("show")}
+              defaultValue={
+                this.isMode("edit") || this.isMode("show")
+                  ? this.getValueField("first_name")
+                  : ""
+              }
               onChange={this.handleChange("first_name")}
               fullWidth
             />
@@ -65,6 +59,12 @@ export default class DialogFormUser extends React.Component {
               id="last_name"
               label="Last Name"
               type="text"
+              disabled={this.isMode("show")}
+              defaultValue={
+                this.isMode("edit") || this.isMode("show")
+                  ? this.getValueField("last_name")
+                  : ""
+              }
               onChange={this.handleChange("last_name")}
               fullWidth
             />
@@ -73,6 +73,12 @@ export default class DialogFormUser extends React.Component {
               id="username"
               label="Username"
               type="text"
+              disabled={this.isMode("show")}
+              defaultValue={
+                this.isMode("edit") || this.isMode("show")
+                  ? this.getValueField("username")
+                  : ""
+              }
               onChange={this.handleChange("username")}
               fullWidth
             />
@@ -81,6 +87,12 @@ export default class DialogFormUser extends React.Component {
               id="chat_id"
               label="Chat ID"
               type="text"
+              disabled={this.isMode("show")}
+              defaultValue={
+                this.isMode("edit") || this.isMode("show")
+                  ? this.getValueField("chat_id")
+                  : ""
+              }
               onChange={this.handleChange("chat_id")}
               fullWidth
             />
@@ -89,17 +101,22 @@ export default class DialogFormUser extends React.Component {
               id="password"
               label="Password"
               type="password"
+              disabled={this.isMode("show")}
               onChange={this.handleChange("password")}
               fullWidth
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={this.props.handleClose} color="primary">
-              Cancel
+              Close
             </Button>
-            <Button onClick={this.handleSave} color="primary">
-              Save
-            </Button>
+            {!this.isMode("show") ? (
+              <Button onClick={this.props.onSave(this.state)} color="primary">
+                Save
+              </Button>
+            ) : (
+              <div />
+            )}
           </DialogActions>
         </Dialog>
       </div>

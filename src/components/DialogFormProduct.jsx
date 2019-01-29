@@ -4,21 +4,28 @@ import TextField from "@material-ui/core/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
-export default class FormDialog extends React.Component {
-  state = {
-    open: false
+export default class DialogFormProduct extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      name: "",
+      description: "",
+      price: ""
+    };
+  }
+
+  handleChange = name => event => {
+    this.setState({
+      [name]: event.target.value
+    });
   };
 
-  handleClickOpen = () => {
-    this.setState({ open: true });
-  };
+  isMode = m => this.props.mode === m;
 
-  handleClose = () => {
-    this.setState({ open: false });
-  };
+  getValueField = field => this.props.data[field] || "";
 
   render() {
     return (
@@ -28,28 +35,62 @@ export default class FormDialog extends React.Component {
           onClose={this.props.handleClose}
           aria-labelledby="form-dialog-title"
         >
-          <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+          <DialogTitle id="form-dialog-title">Product Form</DialogTitle>
           <DialogContent>
-            <DialogContentText>
-              To subscribe to this website, please enter your email address
-              here. We will send updates occasionally.
-            </DialogContentText>
             <TextField
-              autoFocus
               margin="dense"
               id="name"
-              label="Email Address"
-              type="email"
+              label="Name"
+              type="text"
+              disabled={this.isMode("show")}
+              defaultValue={
+                this.isMode("edit") || this.isMode("show")
+                  ? this.getValueField("name")
+                  : ""
+              }
+              onChange={this.handleChange("name")}
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              id="description"
+              label="Description"
+              type="text"
+              disabled={this.isMode("show")}
+              defaultValue={
+                this.isMode("edit") || this.isMode("show")
+                  ? this.getValueField("description")
+                  : ""
+              }
+              onChange={this.handleChange("description")}
+              fullWidth
+            />
+            <TextField
+              margin="dense"
+              id="price"
+              label="Price"
+              type="text"
+              disabled={this.isMode("show")}
+              defaultValue={
+                this.isMode("edit") || this.isMode("show")
+                  ? this.getValueField("price")
+                  : ""
+              }
+              onChange={this.handleChange("price")}
               fullWidth
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={this.props.handleClose} color="primary">
-              Cancel
+              Close
             </Button>
-            <Button onClick={this.props.handleSave} color="primary">
-              Subscribe
-            </Button>
+            {!this.isMode("show") ? (
+              <Button onClick={this.props.onSave(this.state)} color="primary">
+                Save
+              </Button>
+            ) : (
+              <div />
+            )}
           </DialogActions>
         </Dialog>
       </div>
