@@ -26,6 +26,11 @@ const checkPassword = (user, password) => {
   return user.password === pass2;
 };
 
+const requests = (resource, options = {}) => {
+  const url = config.BASE_API_URL + resource;
+  return fetch(url, options);
+};
+
 module.exports = {
   createToken,
   encryptPassword,
