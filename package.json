@@ -9,6 +9,8 @@
     "crypto": "^1.0.1",
     "express": "^4.16.4",
     "jwt-simple": "^0.5.5",
+    "lodash.isempty": "^4.4.0",
+    "lodash.pickby": "^4.6.0",
     "moment": "^2.24.0",
     "mysql2": "^1.6.4",
     "node-telegram-bot-api": "^0.30.0",
