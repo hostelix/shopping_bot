@@ -1,12 +1,14 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
-const config = require("./config");
+const morgan = require("morgan");
 
+const config = require("./config");
 const userController = require("./controllers/UserController");
 const productController = require("./controllers/ProductController");
 const authController = require("./controllers/AuthController");
 const saleController = require("./controllers/SaleController");
+const resourceController = require("./controllers/ResourceController");
 
 const app = express();
 const bot = require("../bot");
@@ -17,6 +19,7 @@ app.use(express.static(path.join(__dirname, "../", "build")));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../build", "index.html"));
@@ -33,6 +36,7 @@ app.use("/api/auth", authController);
 app.use("/api/users", userController);
 app.use("/api/products", productController);
 app.use("/api/sales", saleController);
+app.use("/api/resources", resourceController);
 
 app.listen(config.SERVER_PORT, () =>
   console.log(`Shopping App running in ${config.SERVER_PORT}`)
