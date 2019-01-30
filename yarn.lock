@@ -1836,6 +1836,13 @@ base@^0.11.1:
     mixin-deep "^1.2.0"
     pascalcase "^0.1.1"
 
+basic-auth@~2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/basic-auth/-/basic-auth-2.0.1.tgz#b998279bf47ce38344b4f3cf916d4679bbf51e3a"
+  integrity sha512-NF+epuEdnUYVlGuhaxbbq+dvJttwLnGY+YixlXlME5KpQ5W3CnXA5cVTneY3SPbPDRkcjMbifrwmFYcClgOZeg==
+  dependencies:
+    safe-buffer "5.1.2"
+
 batch@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/batch/-/batch-0.6.1.tgz#dc34314f4e679318093fc760272525f94bf25c16"
@@ -3987,6 +3994,21 @@ filename-regex@^2.0.0:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/filename-regex/-/filename-regex-2.0.1.tgz#c1c4b9bee3e09725ddb106b75c1e301fe2f18b26"
   integrity sha1-wcS5vuPglyXdsQa3XB4wH+LxiyY=
+
+filepond-plugin-image-exif-orientation@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/filepond-plugin-image-exif-orientation/-/filepond-plugin-image-exif-orientation-1.0.3.tgz#b2914b5fd8ec1bc5fc2eb1b0c969275fdbcf9198"
+  integrity sha512-eg0OTny+fsF21x3FnWRrZjDG50iMFFnl8uVKW9MpG+tggBqpp/G7LreO7/gHyPLaiMNO+TX+ANMF51lw6OlNrQ==
+
+filepond-plugin-image-preview@^3.1.6:
+  version "3.1.6"
+  resolved "https://registry.yarnpkg.com/filepond-plugin-image-preview/-/filepond-plugin-image-preview-3.1.6.tgz#0188300f952e76976741d8b88ddd03d1b4ce8214"
+  integrity sha512-IpIHUi0/IIc4Rbo2nxfA+AXzUu0JPfWU2HneuM0NjpNG4s0I0BVv5tw9CgFaqWQ7+Dr9ULJy4SdMmlP9vnyN1g==
+
+filepond@^3.8.0:
+  version "3.8.0"
+  resolved "https://registry.yarnpkg.com/filepond/-/filepond-3.8.0.tgz#8487bc1e61a1b4de29fd7c95043f67392e22228a"
+  integrity sha512-Q3bGo5f2zCpo5iab0oQIpOBy7K3g0dTQC6diJ7+9zwLpyqdPsU9gdYprM5YCNpWiK6EM3g1celON3NX87/QFjA==
 
 fileset@^2.0.2:
   version "2.0.3"
@@ -6653,6 +6675,17 @@ moment-timezone@^0.5.14:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.24.0.tgz#0d055d53f5052aa653c9f6eb68bb5d12bf5c2b5b"
   integrity sha512-bV7f+6l2QigeBBZSM/6yTNq4P2fNpSWj/0e7jQcy87A8e7o2nAfP/34/2ky5Vw4B9S446EtIhodAzkFCcR4dQg==
 
+morgan@^1.9.1:
+  version "1.9.1"
+  resolved "https://registry.yarnpkg.com/morgan/-/morgan-1.9.1.tgz#0a8d16734a1d9afbc824b99df87e738e58e2da59"
+  integrity sha512-HQStPIV4y3afTiCYVxirakhlCfGkI161c76kKFca7Fk1JusM//Qeo1ej2XaMniiNeaZklMVrh3vTtIzpzwbpmA==
+  dependencies:
+    basic-auth "~2.0.0"
+    debug "2.6.9"
+    depd "~1.1.2"
+    on-finished "~2.3.0"
+    on-headers "~1.0.1"
+
 move-concurrently@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/move-concurrently/-/move-concurrently-1.0.1.tgz#be2c005fda32e0b29af1f05d7c4b33214c701f92"
@@ -8428,6 +8461,11 @@ react-event-listener@^0.6.2:
     "@babel/runtime" "7.2.0"
     prop-types "^15.6.0"
     warning "^4.0.1"
+
+react-filepond@^6.0.1:
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/react-filepond/-/react-filepond-6.0.1.tgz#37b5ce8abf8eb64f7444a3a8da9771371a13bc5d"
+  integrity sha512-d+B35az6AYqvVc0aZ52cW9FMVmT40QCp2sIn4PdjvcqmSAhU9KnzxFb+Z65C211RY7jc+99cOWIbnQTDK68RFQ==
 
 react-is@^16.6.3, react-is@^16.7.0:
   version "16.7.0"
