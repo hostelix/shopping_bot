@@ -9,8 +9,7 @@ const Product = {
         autoIncrement: true
       },
       name: {
-        type: Sequelize.INTEGER,
-        unique: true
+        type: Sequelize.STRING
       },
       description: {
         type: Sequelize.STRING
