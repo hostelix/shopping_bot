@@ -9,6 +9,7 @@ const productController = require("./controllers/ProductController");
 const authController = require("./controllers/AuthController");
 const saleController = require("./controllers/SaleController");
 const resourceController = require("./controllers/ResourceController");
+const categoryController = require("./controllers/CategoryController");
 
 const app = express();
 const bot = require("../bot");
@@ -36,6 +37,7 @@ app.use("/api/auth", authController);
 app.use("/api/users", userController);
 app.use("/api/products", productController);
 app.use("/api/sales", saleController);
+app.use("/api/categories", categoryController);
 app.use("/api/resources", resourceController);
 
 app.listen(config.SERVER_PORT, () =>

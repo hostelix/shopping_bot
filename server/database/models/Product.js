@@ -8,6 +8,9 @@ const Product = {
         primaryKey: true,
         autoIncrement: true
       },
+      resource_id: {
+        type: Sequelize.INTEGER
+      },
       name: {
         type: Sequelize.STRING
       },
@@ -16,6 +19,9 @@ const Product = {
       },
       price: {
         type: Sequelize.FLOAT
+      },
+      category_id: {
+        type: Sequelize.INTEGER
       }
     });
   }
