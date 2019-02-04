@@ -12,6 +12,7 @@
     "filepond-plugin-image-exif-orientation": "^1.0.3",
     "filepond-plugin-image-preview": "^3.1.6",
     "jwt-simple": "^0.5.5",
+    "lodash": "^4.17.11",
     "lodash.isempty": "^4.4.0",
     "lodash.pickby": "^4.6.0",
     "moment": "^2.24.0",
