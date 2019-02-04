@@ -20,9 +20,11 @@ import DashboardIcon from "@material-ui/icons/Dashboard";
 import PermIdentityIcon from "@material-ui/icons/PermIdentity";
 import ShoppingCardIcon from "@material-ui/icons/ShoppingCart";
 import SpeakerGroupIcon from "@material-ui/icons/SpeakerGroup";
+import ListIcon from "@material-ui/icons/List";
 import Users from "../views/Users";
 import Products from "../views/Products";
 import Sales from "../views/Sales";
+import Category from "../views/Category";
 
 const drawerWidth = 240;
 
@@ -119,6 +121,11 @@ const listItemsDrawer = [
     title: "Productos",
     icon: <SpeakerGroupIcon />,
     path: "/dashboard/products"
+  },
+  {
+    title: "Categorias",
+    icon: <ListIcon />,
+    path: "/dashboard/categories"
   },
   {
     title: "Ventas",
@@ -218,6 +225,11 @@ class Dashboard extends React.Component {
               path="/dashboard/products"
               name="dashboard-products"
               component={Products}
+            />
+            <Route
+              path="/dashboard/categories"
+              name="dashboard-categories"
+              component={Category}
             />
             <Route
               path="/dashboard/sales"

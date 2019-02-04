@@ -11,6 +11,7 @@ import "filepond/dist/filepond.min.css";
 import FilePondPluginImageExifOrientation from "filepond-plugin-image-exif-orientation";
 import FilePondPluginImagePreview from "filepond-plugin-image-preview";
 import "filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css";
+import { Grid, Paper, Select, MenuItem } from "@material-ui/core";
 
 // Register the plugins
 registerPlugin(FilePondPluginImageExifOrientation, FilePondPluginImagePreview);
@@ -20,12 +21,47 @@ export default class DialogFormProduct extends React.Component {
     super(props);
 
     this.state = {
+      resource_id: "",
       name: "",
       description: "",
       price: "",
-      files: []
+      category_id: "",
+      categories: [],
+      files: [],
+      configServer: {
+        process: "/api/resources",
+        load: "/api/resources/",
+        remove: (resourceID, load, error) => {
+          fetch(`/api/resources/${resourceID}`, {
+            method: "DELETE"
+          })
+            .then(res => res.json())
+            .then(data => load())
+            .catch(err => error(err));
+        },
+        revert: (uniqueFileId, load, error) => {
+          fetch(`/api/resources/${uniqueFileId}`, {
+            method: "DELETE"
+          })
+            .then(res => res.json())
+            .then(data => load())
+            .catch(err => error(err));
+        }
+      }
     };
   }
+
+  handleRemoveFile = file => {
+    this.setState({
+      files: []
+    });
+  };
+
+  handleProcessFile = (error, file) => {
+    if (!error) {
+      this.setState({ resource_id: file.serverId });
+    }
+  };
 
   handleChange = name => event => {
     this.setState({
@@ -37,6 +73,27 @@ export default class DialogFormProduct extends React.Component {
 
   getValueField = field => this.props.data[field] || "";
 
+  componentWillMount() {
+    fetch("/api/categories")
+      .then(res => res.json())
+      .then(data => this.setState({ categories: data }));
+  }
+
+  componentWillReceiveProps(nextProps, nextState) {
+    if (nextProps.mode === "edit") {
+      this.setState({
+        files: [
+          {
+            source: nextProps.data["resource_id"],
+            options: {
+              type: "local"
+            }
+          }
+        ]
+      });
+    }
+  }
+
   render() {
     return (
       <div>
@@ -47,20 +104,40 @@ export default class DialogFormProduct extends React.Component {
         >
           <DialogTitle id="form-dialog-title">Product Form</DialogTitle>
           <DialogContent>
-            <FilePond
-              ref={ref => (this.pond = ref)}
-              files={this.state.files}
-              allowMultiple={true}
-              maxFiles={3}
-              server="/api"
-              oninit={() => this.handleInit()}
-              onupdatefiles={fileItems => {
-                // Set currently active file objects to this.state
-                this.setState({
-                  files: fileItems.map(fileItem => fileItem.file)
-                });
-              }}
-            />
+            {this.isMode("show") ? (
+              <Grid container spacing={16}>
+                <Grid item xs={12}>
+                  <Grid container justify="center" spacing="24">
+                    <Grid item>
+                      <Paper>
+                        <img
+                          src={`/api/resources/${this.getValueField(
+                            "resource_id"
+                          )}`}
+                          width="300"
+                          height="300"
+                        />
+                      </Paper>
+                    </Grid>
+                  </Grid>
+                </Grid>
+              </Grid>
+            ) : (
+              <FilePond
+                name="file"
+                ref={ref => (this.pond = ref)}
+                files={this.state.files}
+                allowMultiple={false}
+                server={this.state.configServer}
+                onprocessfile={this.handleProcessFile}
+                onremovefile={this.handleRemoveFile}
+                onupdatefiles={fileItems => {
+                  this.setState({
+                    files: fileItems.map(f => f.file)
+                  });
+                }}
+              />
+            )}
             <TextField
               margin="dense"
               id="name"
@@ -89,6 +166,24 @@ export default class DialogFormProduct extends React.Component {
               onChange={this.handleChange("description")}
               fullWidth
             />
+            <Select
+              value={
+                this.isMode("edit") || this.isMode("show")
+                  ? this.getValueField("category_id")
+                  : ""
+              }
+              disabled={this.isMode("show")}
+              onChange={this.handleChange("category_id")}
+              displayEmpty
+              fullWidth
+            >
+              <MenuItem value="" disabled>
+                Categoria
+              </MenuItem>
+              {this.state.categories.map(category => (
+                <MenuItem value={category.id}>{category.name}</MenuItem>
+              ))}
+            </Select>
             <TextField
               margin="dense"
               id="price"
