@@ -10,19 +10,35 @@ const Resource = require("../database/models").Resource;
 
 const router = express.Router();
 
-router.get("/", (req, res) => {
-  console.log(req);
+router.get("/:id", (req, res) => {
+  Resource.findByPk(req.params.id)
+    .then(resource => {
+      res.status(200).sendFile(path.join(__dirname, "../../", resource.path), {
+        headers: {
+          "Content-Type": resource.mimetype,
+          "Content-disposition": `filename="${resource.originalname}"`
+        }
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      res.status(500).json({
+        message: "",
+        error: "internal_error",
+        status: 500
+      });
+    });
 });
 
 router.post("/", uploadManager.single("file"), (req, res) => {
   Resource.create(req.file)
-    .then(() => {
+    .then(resource => {
       res
         .status(200)
         .type("text")
-        .send(req.file.filename);
+        .send(`${resource.id}`);
     })
-    .catch(() => {
+    .catch(err => {
       res
         .status(500)
         .type("text")
@@ -31,9 +47,7 @@ router.post("/", uploadManager.single("file"), (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  Resource.findOne({
-    where: { filename: req.params.id }
-  })
+  Resource.findByPk(req.params.id)
     .then(resource => {
       fs.unlink(resource.path, err => {
         if (err) throw err;
