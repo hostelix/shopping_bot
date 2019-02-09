@@ -12,13 +12,15 @@ const bot = new telegramBot(BOT_TOKEN);
 
 const COMMAND_SHOP = "🏪 Tienda";
 const COMMAND_PURCHASES = "🛍 Mis Compras";
+const COMMAND_CONFIRM_PURCHASE = "✅ Confirmar compra";
+const COMMAND_CANCEL_PURCHASE = "❌ Cancelar compra";
 const COMMAND_PRODUCTS = "📦 Productos";
 const COMMAND_CAR = "🛒 Carrito";
 const COMMAND_BACK = "⬅️ Atras";
 const SYMBOL_CATEGORY = "✔";
+const SYMBOL_CURRENCY = "USD";
 const regexCategory = /\(([^)]+)\)/;
 const regexCallbackQuery = /^(\w+[a-zA-Z0-9])\@(\w+[a-zA-Z0-9])\:(\w+[a-zA-Z0-9]|\d)$/;
-const SYMBOL_CURRENCY = "USD";
 
 bot.on("message", message => {
   const { text, chat } = message;
@@ -75,25 +77,61 @@ bot.on("message", message => {
           }
         });
         break;
+      case COMMAND_CONFIRM_PURCHASE:
+        bot.sendMessage(
+          chat.id,
+          "Escriba la direccion donde se enviara su compra",
+          {
+            reply_markup: {
+              keyboard: [[COMMAND_PRODUCTS, COMMAND_CAR], [COMMAND_BACK]]
+            }
+          }
+        );
+        break;
+      case COMMAND_CANCEL_PURCHASE:
+        User.findOne({ where: { chat_id: chat.id } }).then(user => {
+          ShoppingCar.destroy({ where: { user_id: user.id } }).then(() => {
+            bot.sendMessage(chat.id, "Compra cancelada con exito", {
+              reply_markup: {
+                keyboard: [[COMMAND_PRODUCTS, COMMAND_CAR], [COMMAND_BACK]]
+              }
+            });
+          });
+        });
+
+        break;
       case COMMAND_CAR:
         User.findOne({ where: { chat_id: chat.id } }).then(user => {
           ShoppingCar.findAll({ where: { user_id: user.id } })
             .then(data => {
               let msg = "";
 
-              data.forEach(scar => {
-                //Product.findByPk(scar.product_id).then(product => {
-                msg +=
-                  `` +
-                  `<strong>Producto:</strong> ${scar.product_id}\n` +
-                  `<strong>Cantidad:</strong> ${scar.quantity}\n\n` +
-                  `---------------------------------------------\n\n`;
-                //});
-              });
+              if (data.length > 0) {
+                data.forEach(scar => {
+                  //Product.findByPk(scar.product_id).then(product => {
+                  msg +=
+                    `` +
+                    `<strong>Producto:</strong> ${scar.product_id}\n` +
+                    `<strong>Cantidad:</strong> ${scar.quantity}\n\n` +
+                    `---------------------------------------------\n\n`;
+                  //});
+                });
+              } else {
+                msg = "El carrito se encuentra vacio";
+              }
+
               return msg;
             })
             .then(m => {
-              bot.sendMessage(chat.id, m, { parse_mode: "HTML" });
+              bot.sendMessage(chat.id, m, {
+                parse_mode: "HTML",
+                reply_markup: {
+                  keyboard: [
+                    [COMMAND_CONFIRM_PURCHASE, COMMAND_CANCEL_PURCHASE],
+                    [COMMAND_BACK]
+                  ]
+                }
+              });
             });
         });
 
