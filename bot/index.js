@@ -1,14 +1,21 @@
 const fs = require("fs");
 const telegramBot = require("node-telegram-bot-api");
 const _ = require("lodash");
+const redis = require("redis");
+
 const BOT_TOKEN = require("../server/config").BOT_TOKEN;
+
 const User = require("../server/database/models").User;
 const Category = require("../server/database/models").Category;
 const Product = require("../server/database/models").Product;
 const Resource = require("../server/database/models").Resource;
 const ShoppingCar = require("../server/database/models").ShoppingCar;
 
+const SessionManager = require("./session");
+
+const clientRedis = redis.createClient();
 const bot = new telegramBot(BOT_TOKEN);
+const session = SessionManager(clientRedis);
 
 const COMMAND_SHOP = "🏪 Tienda";
 const COMMAND_PURCHASES = "🛍 Mis Compras";
@@ -24,6 +31,8 @@ const regexCallbackQuery = /^(\w+[a-zA-Z0-9])\@(\w+[a-zA-Z0-9])\:(\w+[a-zA-Z0-9]
 
 bot.on("message", message => {
   const { text, chat } = message;
+
+  session.get(`${chat.id}`).then(console.log);
 
   if (text) {
     if (text.startsWith(SYMBOL_CATEGORY)) {
@@ -78,15 +87,22 @@ bot.on("message", message => {
         });
         break;
       case COMMAND_CONFIRM_PURCHASE:
-        bot.sendMessage(
-          chat.id,
-          "Escriba la direccion donde se enviara su compra",
-          {
-            reply_markup: {
-              keyboard: [[COMMAND_PRODUCTS, COMMAND_CAR], [COMMAND_BACK]]
-            }
-          }
-        );
+        session
+          .set(`${chat.id}`, {
+            action: "set_address_shipping"
+          })
+          .then(() =>
+            bot.sendMessage(
+              chat.id,
+              "Escriba la direccion donde se enviara su compra",
+              {
+                reply_markup: {
+                  keyboard: [[COMMAND_PRODUCTS, COMMAND_CAR], [COMMAND_BACK]]
+                }
+              }
+            )
+          );
+
         break;
       case COMMAND_CANCEL_PURCHASE:
         User.findOne({ where: { chat_id: chat.id } }).then(user => {
