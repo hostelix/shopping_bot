@@ -3,13 +3,16 @@ const telegramBot = require("node-telegram-bot-api");
 const _ = require("lodash");
 const redis = require("redis");
 
-const BOT_TOKEN = require("../server/config").BOT_TOKEN;
+const { BOT_TOKEN } = require("../config/config");
+const { table } = require("table");
 
-const User = require("../server/database/models").User;
-const Category = require("../server/database/models").Category;
-const Product = require("../server/database/models").Product;
-const Resource = require("../server/database/models").Resource;
-const ShoppingCar = require("../server/database/models").ShoppingCar;
+const {
+  User,
+  Category,
+  Product,
+  Resource,
+  ShoppingCar
+} = require("../database/models");
 
 const SessionManager = require("./session");
 
@@ -17,6 +20,7 @@ const clientRedis = redis.createClient();
 const bot = new telegramBot(BOT_TOKEN);
 const session = SessionManager(clientRedis);
 
+//Commands
 const COMMAND_SHOP = "🏪 Tienda";
 const COMMAND_PURCHASES = "🛍 Mis Compras";
 const COMMAND_CONFIRM_PURCHASE = "✅ Confirmar compra";
@@ -24,15 +28,41 @@ const COMMAND_CANCEL_PURCHASE = "❌ Cancelar compra";
 const COMMAND_PRODUCTS = "📦 Productos";
 const COMMAND_CAR = "🛒 Carrito";
 const COMMAND_BACK = "⬅️ Atras";
+
+//Actions
+const ACTION_SET_QUANTITY_PRODUCT = "set_quantity_product";
+const ACTION_SET_ADDRESS_SHIPPING = "set_address_shipping";
+
 const SYMBOL_CATEGORY = "✔";
 const SYMBOL_CURRENCY = "USD";
+
 const regexCategory = /\(([^)]+)\)/;
 const regexCallbackQuery = /^(\w+[a-zA-Z0-9])\@(\w+[a-zA-Z0-9])\:(\w+[a-zA-Z0-9]|\d)$/;
 
 bot.on("message", message => {
   const { text, chat } = message;
+  const sessionKey = `${chat.id}`;
 
-  session.get(`${chat.id}`).then(console.log);
+  session.get(sessionKey).then(data => {
+    const { action, context } = data;
+
+    switch (action) {
+      case ACTION_SET_QUANTITY_PRODUCT:
+        const { product_id, user_id } = context;
+
+        ShoppingCar.create({
+          user_id: user_id,
+          product_id: product_id,
+          quantity: parseInt(text)
+        })
+          .then(() => session.set(sessionKey, { context }))
+          .then(() => bot.sendMessage(chat.id, `Producto agregado al carrito`));
+
+        break;
+      case ACTION_SET_ADDRESS_SHIPPING:
+        break;
+    }
+  });
 
   if (text) {
     if (text.startsWith(SYMBOL_CATEGORY)) {
@@ -89,7 +119,7 @@ bot.on("message", message => {
       case COMMAND_CONFIRM_PURCHASE:
         session
           .set(`${chat.id}`, {
-            action: "set_address_shipping"
+            action: ACTION_SET_ADDRESS_SHIPPING
           })
           .then(() =>
             bot.sendMessage(
@@ -117,6 +147,8 @@ bot.on("message", message => {
 
         break;
       case COMMAND_CAR:
+        const tableCar = [["Producto", "Precio", "Cantidad"]];
+
         User.findOne({ where: { chat_id: chat.id } }).then(user => {
           ShoppingCar.findAll({ where: { user_id: user.id } })
             .then(data => {
@@ -124,19 +156,13 @@ bot.on("message", message => {
 
               if (data.length > 0) {
                 data.forEach(scar => {
-                  //Product.findByPk(scar.product_id).then(product => {
-                  msg +=
-                    `` +
-                    `<strong>Producto:</strong> ${scar.product_id}\n` +
-                    `<strong>Cantidad:</strong> ${scar.quantity}\n\n` +
-                    `---------------------------------------------\n\n`;
-                  //});
+                  tableCar.push([scar.product_id, 0, scar.quantity]);
                 });
               } else {
                 msg = "El carrito se encuentra vacio";
               }
 
-              return msg;
+              return "<pre>" + table(tableCar) + "</pre>";
             })
             .then(m => {
               bot.sendMessage(chat.id, m, {
@@ -195,22 +221,23 @@ bot.onText(/\/start/, message => {
   });
 });
 
-bot.on("callback_query", message => {
-  const { data: query, from, chat } = message;
+bot.on("callback_query", msg => {
+  const { data: query, from, message } = msg;
   const match = query.match(regexCallbackQuery);
   const [, namespace, action, params] = match;
 
   if (namespace === "product" && action === "add_car") {
-    User.findOne({ where: { chat_id: from.id } }).then(user => {
-      ShoppingCar.create({
-        user_id: user.id,
-        product_id: params,
-        quantity: 0
-      }).then(() => {
-        bot.sendMessage(from.id, `Producto agregado al carrito`);
+    const { chat } = message;
+    User.findOne({ where: { chat_id: chat.id } })
+      .then(user =>
+        session.set(`${chat.id}`, {
+          action: ACTION_SET_QUANTITY_PRODUCT,
+          context: { product_id: params, user_id: user.id }
+        })
+      )
+      .then(() => {
+        bot.sendMessage(chat.id, "Escriba la cantidad que desea comprar");
       });
-    });
-    console.log(message);
   }
 });
 

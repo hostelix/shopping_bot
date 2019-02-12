@@ -5,7 +5,7 @@ const SessionManager = client => {
   const setAsync = promisify(client.set).bind(client);
 
   return {
-    get: key => getAsync(key),
+    get: key => getAsync(key).then(data => JSON.parse(data)),
     set: (key, data) => setAsync(key, JSON.stringify(data))
   };
 };
