@@ -68,25 +68,26 @@ bot.on("message", message => {
     if (text.startsWith(SYMBOL_CATEGORY)) {
       const [, idCategory] = text.match(regexCategory);
 
-      Product.findAll({ where: { category_id: idCategory } }).then(products => {
+      Product.findAll({
+        where: { category_id: idCategory },
+        include: [{ model: Resource, as: "resource" }]
+      }).then(products => {
         products.forEach(product => {
-          Resource.findByPk(product.resource_id).then(resource => {
-            bot.sendPhoto(chat.id, fs.createReadStream(resource.path), {
-              caption: `
+          bot.sendPhoto(chat.id, fs.createReadStream(product.resource.path), {
+            caption: `
 📦 Producto: ${product.name}
 ℹ️ Descripcion: ${product.description}
 💰 Precio: ${product.price} ${SYMBOL_CURRENCY}`,
-              reply_markup: {
-                inline_keyboard: [
-                  [
-                    {
-                      text: "Agregar al Carrito",
-                      callback_data: `product@add_car:${product.id}`
-                    }
-                  ]
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: "Agregar al Carrito",
+                    callback_data: `product@add_car:${product.id}`
+                  }
                 ]
-              }
-            });
+              ]
+            }
           });
         });
       });
@@ -150,7 +151,10 @@ bot.on("message", message => {
         const tableCar = [["Producto", "Precio", "Cantidad"]];
 
         User.findOne({ where: { chat_id: chat.id } }).then(user => {
-          ShoppingCar.findAll({ where: { user_id: user.id } })
+          ShoppingCar.findAll({
+            where: { user_id: user.id },
+            include: [{ model: Product, as: "product" }]
+          })
             .then(data => {
               let msg = "";
 

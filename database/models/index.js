@@ -32,21 +32,18 @@ const models = Object.assign(
     .filter(file => !excludeFiles.includes(file))
     .map(file => {
       if (file) {
-        const model = require(path.join(__dirname, file));
-        const nameModel = file.split(".")[0];
-        return {
-          [nameModel]: model.init(sequelize)
-        };
+        const model = sequelize["import"](path.join(__dirname, file));
+        const name = path.basename(file, ".js");
+        return { [name]: model };
       }
     })
 );
 
 // Load model associations
-for (const key of Object.keys(models)) {
-  if (models[key]) {
-    typeof models[key].associate === "function" &&
-      models[key].associate(models);
+Object.keys(models).forEach(key => {
+  if ("associate" in models[key]) {
+    models[key].associate(models);
   }
-}
+});
 
 module.exports = models;

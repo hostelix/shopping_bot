@@ -1,18 +1,23 @@
 const Sequelize = require("sequelize");
 
-const Category = {
-  init: sequelize => {
-    return sequelize.define("categories", {
-      id: {
-        type: Sequelize.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      name: {
-        type: Sequelize.STRING
-      }
-    });
-  }
-};
+module.exports = (sequelize, DataTypes) => {
+  const Category = sequelize.define("categories", {
+    id: {
+      type: Sequelize.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    name: {
+      type: Sequelize.STRING
+    }
+  });
 
-module.exports = Category;
+  Category.associate = models => {
+    models.Category.hasMany(models.Product, {
+      as: "Products",
+      foreignKey: "category_id"
+    });
+  };
+
+  return Category;
+};

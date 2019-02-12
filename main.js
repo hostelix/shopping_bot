@@ -16,7 +16,7 @@ const bot = require("./bot");
 
 bot.setWebHook(`${config.SERVER_ADDRESS}/bot${config.BOT_TOKEN}`);
 
-app.use(express.static(path.join(__dirname, "../", "build")));
+app.use(express.static(path.join(__dirname, "./", "build")));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
