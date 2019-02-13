@@ -25,6 +25,7 @@ import Users from "../views/Users";
 import Products from "../views/Products";
 import Sales from "../views/Sales";
 import Category from "../views/Category";
+import DashboardChart from "../views/DashboardChart";
 
 const drawerWidth = 240;
 
@@ -216,6 +217,12 @@ class Dashboard extends React.Component {
         </Drawer>
         <main className={classes.content}>
           <Switch>
+            <Route
+              path="/dashboard"
+              exact
+              name="dashboard-chart"
+              component={DashboardChart}
+            />
             <Route
               path="/dashboard/users"
               name="dashboard-users"

@@ -10,6 +10,7 @@ const authController = require("./api/controllers/AuthController");
 const saleController = require("./api/controllers/SaleController");
 const resourceController = require("./api/controllers/ResourceController");
 const categoryController = require("./api/controllers/CategoryController");
+const statisticsController = require("./api/controllers/StatisticsController");
 
 const app = express();
 const bot = require("./bot");
@@ -39,6 +40,7 @@ app.use("/api/products", productController);
 app.use("/api/sales", saleController);
 app.use("/api/categories", categoryController);
 app.use("/api/resources", resourceController);
+app.use("/api/statistics", statisticsController);
 
 app.listen(config.SERVER_PORT, () =>
   console.log(`Shopping App running in ${config.SERVER_PORT}`)
