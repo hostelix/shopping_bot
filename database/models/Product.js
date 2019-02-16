@@ -27,6 +27,13 @@ module.exports = (sequelize, DataTypes) => {
   Product.associate = models => {
     models.Product.belongsTo(models.Category, { foreignKey: "category_id" });
     models.Product.belongsTo(models.Resource, { foreignKey: "resource_id" });
+
+    models.Product.belongsToMany(models.Purchase, {
+      as: "Purchases",
+      through: { model: models.PurchaseProduct, unique: false },
+      foreignKey: "product_id",
+      otherKey: "purchase_id"
+    });
   };
 
   return Product;

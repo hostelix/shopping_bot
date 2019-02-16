@@ -29,7 +29,12 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  User.associate = models => {};
+  User.associate = models => {
+    models.User.hasMany(models.Purchase, {
+      as: "Purchases",
+      foreignKey: "user_id"
+    });
+  };
 
   return User;
 };

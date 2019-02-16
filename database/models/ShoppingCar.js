@@ -18,7 +18,9 @@ module.exports = (sequelize, DataTypes) => {
     }
   });
 
-  ShoppingCar.associate = models => {};
+  ShoppingCar.associate = models => {
+    models.ShoppingCar.belongsTo(models.Product, { foreignKey: "product_id" });
+  };
 
   return ShoppingCar;
 };
