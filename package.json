@@ -36,7 +36,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "serve": "npm run build && node main.js",
+    "serve": "node main.js",
     "db:sync": "node database/sync_db.js"
   },
   "eslintConfig": {

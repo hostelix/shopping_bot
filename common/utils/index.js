@@ -1,6 +1,7 @@
 const jwt = require("jwt-simple");
 const moment = require("moment");
 const crypto = require("crypto");
+const request = require("request-promise");
 const config = require("../../config/config");
 
 const createToken = user => {
@@ -24,11 +25,6 @@ const checkPassword = (user, password) => {
   const pass2 = encryptPassword(password);
 
   return user.password === pass2;
-};
-
-const requests = (resource, options = {}) => {
-  const url = config.BASE_API_URL + resource;
-  return fetch(url, options);
 };
 
 module.exports = {
