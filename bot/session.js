@@ -10,7 +10,7 @@ const SessionManager = client => {
     update: (key, data) =>
       getAsync(key)
         .then(res => JSON.parse(res))
-        .then(res => setAsync(key, JSON.stringify({ ...res, data })))
+        .then(res => setAsync(key, JSON.stringify({ ...res, ...data })))
   };
 };
 

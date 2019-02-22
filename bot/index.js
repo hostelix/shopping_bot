@@ -63,7 +63,9 @@ bot.on("message", message => {
           product_id: product_id,
           quantity: parseInt(text)
         })
-          .then(() => session.set(sessionKey, { action: ACTION_NONE, context }))
+          .then(() =>
+            session.update(sessionKey, { action: ACTION_NONE, context })
+          )
           .then(() => bot.sendMessage(chat.id, `Producto agregado al carrito`));
 
         break;
@@ -115,6 +117,8 @@ bot.on("message", message => {
     if (text.startsWith(SYMBOL_CATEGORY)) {
       const [, idCategory] = text.match(regexCategory);
 
+      bot.sendChatAction(chat.id, "typing");
+
       Product.findAndCountAll({
         where: { category_id: idCategory },
         order: ["id"],
@@ -122,6 +126,14 @@ bot.on("message", message => {
         offset: 0,
         include: [{ model: Resource, as: "resource" }]
       }).then(result => {
+        if (result.count === 0) {
+          bot.sendMessage(
+            chat.id,
+            "No hay productos registrados en esta categoria"
+          );
+          return;
+        }
+
         const products = result.rows;
 
         let pages = Math.ceil(result.count / LIMIT_PRODUCTS);
@@ -155,7 +167,7 @@ bot.on("message", message => {
           });
         });
 
-        session.set(sessionKey, {
+        session.update(sessionKey, {
           context: {
             category_id: idCategory
           }
@@ -349,9 +361,12 @@ bot.on("callback_query", msg => {
     const { chat } = message;
     User.findOne({ where: { chat_id: chat.id } })
       .then(user => {
-        session.set(sessionKey, {
-          action: ACTION_SET_QUANTITY_PRODUCT,
-          context: { product_id: params, user_id: user.id }
+        session.get(sessionKey).then(data => {
+          const { context } = data;
+          return session.update(sessionKey, {
+            action: ACTION_SET_QUANTITY_PRODUCT,
+            context: { ...context, product_id: params, user_id: user.id }
+          });
         });
       })
       .then(() => {
