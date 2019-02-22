@@ -1,5 +1,5 @@
 import React from "react";
-import ChartPie from "../components/ChartPie";
+import CharBar from "../components/ChartBar";
 import ChartLine from "../components/ChartLine";
 
 const styles = {
@@ -11,7 +11,7 @@ class DashboardChart extends React.Component {
     return (
       <div style={styles}>
         <ChartLine />
-        <ChartPie />
+        <CharBar />
       </div>
     );
   }

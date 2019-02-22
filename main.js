@@ -7,7 +7,7 @@ const config = require("./config/config");
 const userController = require("./api/controllers/UserController");
 const productController = require("./api/controllers/ProductController");
 const authController = require("./api/controllers/AuthController");
-const saleController = require("./api/controllers/SaleController");
+const purchaseController = require("./api/controllers/PurchaseController");
 const resourceController = require("./api/controllers/ResourceController");
 const categoryController = require("./api/controllers/CategoryController");
 const statisticsController = require("./api/controllers/StatisticsController");
@@ -37,7 +37,7 @@ app.post(`/bot${config.BOT_TOKEN}`, (req, res) => {
 app.use("/api/auth", authController);
 app.use("/api/users", userController);
 app.use("/api/products", productController);
-app.use("/api/sales", saleController);
+app.use("/api/purchases", purchaseController);
 app.use("/api/categories", categoryController);
 app.use("/api/resources", resourceController);
 app.use("/api/statistics", statisticsController);

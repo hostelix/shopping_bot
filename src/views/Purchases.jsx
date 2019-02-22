@@ -122,7 +122,7 @@ const styles = theme => ({
   }
 });
 
-class SalesTable extends React.Component {
+class PurchasesTable extends React.Component {
   state = {
     rows: [],
     page: 0,
@@ -148,7 +148,7 @@ class SalesTable extends React.Component {
 
   handleSave = data => event => {
     if (this.state.modeForm === "create") {
-      fetch("/api/sales", {
+      fetch("/api/purchases", {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -168,7 +168,7 @@ class SalesTable extends React.Component {
         });
     } else if (this.state.modeForm === "edit") {
       console.log(data);
-      fetch(`/api/sales/${this.state.dataForm.id}`, {
+      fetch(`/api/purchases/${this.state.dataForm.id}`, {
         method: "PUT",
         headers: {
           Accept: "application/json",
@@ -196,8 +196,8 @@ class SalesTable extends React.Component {
     });
   };
 
-  handleShowUser = saleId => event => {
-    fetch(`/api/sales/${saleId}`)
+  handleShowPurchase = saleId => event => {
+    fetch(`/api/purchases/${saleId}`)
       .then(res => res.json())
       .then(data => {
         this.setState({
@@ -209,7 +209,7 @@ class SalesTable extends React.Component {
   };
 
   handleEditUser = saleId => event => {
-    fetch(`/api/sales/${saleId}`)
+    fetch(`/api/purchases/${saleId}`)
       .then(res => res.json())
       .then(data => {
         this.setState({
@@ -222,7 +222,7 @@ class SalesTable extends React.Component {
 
   handleDeleteUser = saleId => event => {
     if (window.confirm("Desea eliminar este usuario?")) {
-      fetch(`/api/sales/${saleId}`, {
+      fetch(`/api/purchases/${saleId}`, {
         method: "DELETE"
       })
         .then(res => res.json())
@@ -233,7 +233,7 @@ class SalesTable extends React.Component {
   };
 
   loadDataTable = () => {
-    fetch("/api/sales")
+    fetch("/api/purchases")
       .then(res => res.json())
       .then(data => {
         this.setState({
@@ -258,7 +258,7 @@ class SalesTable extends React.Component {
 
     return (
       <div>
-        <h2>Sales</h2>
+        <h2>Purchases</h2>
         <Paper className={classes.root}>
           <div className={classes.tableWrapper}>
             <Table className={classes.table}>
@@ -267,8 +267,9 @@ class SalesTable extends React.Component {
                   <TableCell>ID</TableCell>
                   <TableCell align="right">First Name</TableCell>
                   <TableCell align="right">Last Name</TableCell>
-                  <TableCell align="right">Salename</TableCell>
-                  <TableCell align="right">Chat ID</TableCell>
+                  <TableCell align="right">Username</TableCell>
+                  <TableCell align="right">Address Shipping</TableCell>
+                  <TableCell align="right">Amount</TableCell>
                   <TableCell align="center">Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -280,22 +281,19 @@ class SalesTable extends React.Component {
                       <TableCell component="th" scope="row">
                         {row.id}
                       </TableCell>
-                      <TableCell align="right">{row.first_name}</TableCell>
-                      <TableCell align="right">{row.last_name}</TableCell>
-                      <TableCell align="right">{row.username}</TableCell>
-                      <TableCell align="right">{row.chat_id}</TableCell>
+                      <TableCell align="right">{row.user.first_name}</TableCell>
+                      <TableCell align="right">{row.user.last_name}</TableCell>
+                      <TableCell align="right">{row.user.username}</TableCell>
+                      <TableCell align="right">
+                        {row.address_shipping}
+                      </TableCell>
+                      <TableCell align="right">{row.total_amount}</TableCell>
                       <TableCell align="center">
                         <IconButton
                           aria-label="Show"
-                          onClick={this.handleShowSale(row.id)}
+                          onClick={this.handleShowPurchase(row.id)}
                         >
                           <VisibilityIcon />
-                        </IconButton>
-                        <IconButton
-                          aria-label="Delete"
-                          onClick={this.handleDeleteSale(row.id)}
-                        >
-                          <DeleteIcon />
                         </IconButton>
                       </TableCell>
                     </TableRow>
@@ -338,8 +336,8 @@ class SalesTable extends React.Component {
   }
 }
 
-SalesTable.propTypes = {
+PurchasesTable.propTypes = {
   classes: PropTypes.object.isRequired
 };
 
-export default withStyles(styles)(SalesTable);
+export default withStyles(styles)(PurchasesTable);

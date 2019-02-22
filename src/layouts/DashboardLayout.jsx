@@ -23,7 +23,7 @@ import SpeakerGroupIcon from "@material-ui/icons/SpeakerGroup";
 import ListIcon from "@material-ui/icons/List";
 import Users from "../views/Users";
 import Products from "../views/Products";
-import Sales from "../views/Sales";
+import Purchases from "../views/Purchases";
 import Category from "../views/Category";
 import DashboardChart from "../views/DashboardChart";
 
@@ -129,9 +129,9 @@ const listItemsDrawer = [
     path: "/dashboard/categories"
   },
   {
-    title: "Ventas",
+    title: "Compras",
     icon: <ShoppingCardIcon />,
-    path: "/dashboard/sales"
+    path: "/dashboard/purchases"
   }
 ];
 
@@ -239,9 +239,9 @@ class Dashboard extends React.Component {
               component={Category}
             />
             <Route
-              path="/dashboard/sales"
-              name="dashboard-sales"
-              component={Sales}
+              path="/dashboard/purchases"
+              name="dashboard-purchases"
+              component={Purchases}
             />
           </Switch>
         </main>

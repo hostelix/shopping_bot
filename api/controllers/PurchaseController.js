@@ -1,10 +1,12 @@
 const express = require("express");
-const { Sale } = require("../../database/models");
+const { Purchase, User } = require("../../database/models");
 
 const router = express.Router();
 
 router.get("/", (req, res) => {
-  Sale.findAll()
+  Purchase.findAll({
+    include: [{ model: User, as: "user" }]
+  })
     .then(data => {
       res.status(200).json(data);
     })
@@ -18,7 +20,9 @@ router.get("/", (req, res) => {
 });
 
 router.get("/:id", (req, res) => {
-  Sale.findByPk(req.params.id)
+  Purchase.findByPk(req.params.id, {
+    include: [{ model: User, as: "user" }]
+  })
     .then(user => {
       res.status(200).json(user);
     })
@@ -32,11 +36,11 @@ router.get("/:id", (req, res) => {
 });
 
 router.post("/", (req, res) => {
-  Sale.create(req.body)
+  Purchase.create(req.body)
     .then(() => {
       res.status(200).json({
         status: 200,
-        message: "Venta registrada con exito"
+        message: "Compra registrada con exito"
       });
     })
     .catch(() => {
@@ -48,14 +52,14 @@ router.post("/", (req, res) => {
     });
 });
 router.put("/:id", (req, res) => {
-  Sale.findByPk(req.params.id)
-    .then(sale => {
-      return sale.update(req.body);
+  Purchase.findByPk(req.params.id)
+    .then(purchase => {
+      return purchase.update(req.body);
     })
     .then(() => {
       res.status(200).json({
         status: 200,
-        message: "Venta actualizada con exito"
+        message: "Compra actualizada con exito"
       });
     })
     .catch(err => {
@@ -68,14 +72,14 @@ router.put("/:id", (req, res) => {
 });
 
 router.delete("/:id", (req, res) => {
-  Sale.findByPk(req.params.id)
-    .then(sale => {
-      return sale.destroy();
+  Purchase.findByPk(req.params.id)
+    .then(purchase => {
+      return purchase.destroy();
     })
     .then(() => {
       res.status(200).json({
         status: 200,
-        message: "Venta eliminado con exito"
+        message: "Compra eliminado con exito"
       });
     })
     .catch(err => {
